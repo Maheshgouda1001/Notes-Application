@@ -1,0 +1,13 @@
+@import "tailwindcss";
+/* ./app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+}
+
+.appBar {
+    background-color: #91abae;
+    color: rgb(34, 78, 82);
+}
