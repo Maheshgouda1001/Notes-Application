@@ -1,9 +1,28 @@
+import os
+import jwt
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from .. import schemas, crud
 from ..database import get_db
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+SECRET_KEY = os.getenv("SECRET_KEY") 
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS")
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def create_refresh_token(data: dict):
+    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode = {"exp": expire, **data}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 @router.post("/signup")
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -18,7 +37,17 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/signin")
 def signin(user: schemas.UserLogin, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, user.email)
+    db_user = crud.get_user_by_email(db, user.username)
+
     if not db_user or not crud.verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"message": "Login successful", "user_id": db_user.id}
+    
+    access_token = create_access_token(data={"email": db_user.email})
+    refresh_token = create_refresh_token(data={"email": db_user.email})
+    
+    return {
+        "message": "Login successful",
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "user_id": db_user.id
+    }

@@ -9,9 +9,9 @@ export async function signup(username: string, email: string, password: string, 
   });
 }
 
-// export async function signin(email: string, password: string) {
-//   return apiRequest<{ message: string; user_id: number }>("/auth/signin", "POST", {
-//     email,
-//     password,
-//   });
-// }
+export async function signin(username: string, password: string) {
+  return apiRequest("/auth/signin", "POST", {
+    username,
+    password,
+  });
+}
