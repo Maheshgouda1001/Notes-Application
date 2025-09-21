@@ -1,11 +1,11 @@
 export const API_BASE = "http://127.0.0.1:8000";
 
-export async function apiRequest<TResponse, TBody = undefined>(
+export async function apiRequest<T>(
   url: string,
-  method: "GET" | "POST" | "PUT" | "DELETE",
-  body?: TBody,
+  method: string,
+  body?: Record<string, unknown>,
   token?: string
-): Promise<TResponse> {
+): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -25,5 +25,5 @@ export async function apiRequest<TResponse, TBody = undefined>(
     throw new Error(error.detail);
   }
 
-  return res.json() as Promise<TResponse>;
+  return res.json() as Promise<T>;
 }

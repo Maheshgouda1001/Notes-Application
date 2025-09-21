@@ -7,10 +7,12 @@ import Card from "../../components/card";
 import { ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signin } from "../../services/auth";
+import { LoginResponse } from "../../types";
 
 export default function LoginPage() {
     const router = useRouter();
 
+    
     const [values, setValues] = React.useState({
         username: "",
         password: ""
@@ -23,8 +25,11 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         try {
-            const response = await signin(values.username, values.password);
+            const response: LoginResponse = await signin(values.username, values.password);
             console.log("Login successful:", response);
+            debugger;
+            localStorage.setItem('access-token', response.access_token);
+            router.push('/home');
         } catch (error) {
             console.error("Login failed:", error);
             alert("Login failed. Please check your credentials and try again.");

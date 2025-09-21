@@ -20,6 +20,7 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 def get_user_by_email(db: Session, email: str):
+    print(db.query(User).filter(User.email == email).first())
     return db.query(User).filter(User.email == email).first()
 
 def create_note(db: Session, note: NoteCreate, user_id: int):

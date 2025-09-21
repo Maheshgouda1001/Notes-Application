@@ -7,7 +7,7 @@ class UserCreate(BaseModel):
     confirm_password: str
 
 class UserLogin(BaseModel):
-    username: EmailStr
+    email: EmailStr
     password: str
 
 class NoteBase(BaseModel):
