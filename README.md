@@ -6,19 +6,27 @@ A simple **Notes Application** with a **Next.js frontend** and **FastAPI + Postg
 ```sql
 CREATE DATABASE notesdb;
 
+-- Create USER table
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(120) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_name VARCHAR(100) NOT NULL,
+    user_email VARCHAR(150) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create NOTES table
 CREATE TABLE notes (
-    id SERIAL PRIMARY KEY,
-    header VARCHAR(100) NOT NULL,
-    content TEXT NOT NULL,
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE
+    note_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    note_title VARCHAR(200) NOT NULL,
+    note_content TEXT NOT NULL,
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id UUID NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
 2. Configure .env
 env
 Copy code
